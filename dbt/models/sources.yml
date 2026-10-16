@@ -1,0 +1,91 @@
+# Raw inputs are files, read in place by DuckDB (dbt-duckdb "external sources").
+# Paths come from env vars that `hcq` sets; see src/hcq/config.py.
+# Column types use struct_pack(...) rather than a {...} literal: dbt-duckdb formats
+# external_location with str.format_map, so literal braces would be read as placeholders.
+
+sources:
+  - name: master
+    description: Master hotel catalog (OpenStreetMap or the offline synthetic set), validated on ingest.
+    tables:
+      - name: hotels
+        config:
+          meta:
+            external_location: "read_parquet('{{ env_var('HCQ_REFERENCE_PATH', '../data/reference/hotels.parquet') }}')"
+
+  - name: northwind
+    description: Northwind Stays, JSON lines with ISO timestamps (docs/partner-feeds.md).
+    tables:
+      - name: listings
+        config:
+          meta:
+            external_location: >-
+              read_json('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/northwind/*/listings.jsonl',
+                format = 'newline_delimited', hive_partitioning = true,
+                columns = struct_pack(listing_id := 'VARCHAR', name := 'VARCHAR',
+                           address := 'STRUCT(street VARCHAR, postal_code VARCHAR, city VARCHAR, country VARCHAR)',
+                           geo := 'STRUCT(lat DOUBLE, lon DOUBLE)', stars := 'VARCHAR', phone := 'VARCHAR',
+                           website := 'VARCHAR', updated_at := 'VARCHAR'))
+      - name: rates
+        config:
+          meta:
+            external_location: >-
+              read_json('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/northwind/*/rates.jsonl',
+                format = 'newline_delimited', hive_partitioning = true,
+                columns = struct_pack(listing_id := 'VARCHAR', stay_date := 'DATE', price_eur := 'DOUBLE', currency := 'VARCHAR'))
+
+  - name: rheinland
+    description: Rheinland Reisen, German CSV export (semicolon, decimal comma, dd.mm.yyyy).
+    tables:
+      - name: hotels
+        config:
+          meta:
+            external_location: >-
+              read_csv('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/rheinland/*/hotels.csv',
+                delim = ';', header = true, all_varchar = true, hive_partitioning = true)
+      - name: preise
+        config:
+          meta:
+            external_location: >-
+              read_csv('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/rheinland/*/preise.csv',
+                delim = ';', header = true, all_varchar = true, hive_partitioning = true)
+
+  - name: citybeds
+    description: CityBeds, one nested JSON document per snapshot with rates in cents.
+    tables:
+      - name: properties
+        config:
+          meta:
+            external_location: >-
+              read_json('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/citybeds/*/properties.json',
+                format = 'auto', hive_partitioning = true, maximum_object_size = 268435456,
+                columns = struct_pack(generated_at := 'BIGINT',
+                           properties := 'STRUCT(id VARCHAR, title VARCHAR,
+                              location STRUCT(address STRUCT(line1 VARCHAR, zip VARCHAR, city VARCHAR),
+                                              geo STRUCT(lat DOUBLE, lng DOUBLE)),
+                              rating STRUCT(stars VARCHAR), contact STRUCT(phone VARCHAR, url VARCHAR),
+                              last_modified BIGINT,
+                              rates STRUCT("date" DATE, amount_cents BIGINT, currency VARCHAR)[])[]'))
+
+  - name: mapping
+    description: Internal mapping table, partner listing -> master hotel. Unmapped listings are absent.
+    tables:
+      - name: mapping
+        config:
+          meta:
+            external_location: >-
+              read_csv('{{ env_var('HCQ_RAW_DIR', '../data/raw') }}/mapping/*/mapping.csv',
+                header = true, all_varchar = true, hive_partitioning = true)
+
+  - name: ground_truth
+    description: >-
+      Labels for every injected defect. Only exists because the feeds are simulated; used by the
+      eval models to score checks, never by the checks themselves.
+    tables:
+      - name: defects
+        config:
+          meta:
+            external_location: "read_parquet('{{ env_var('HCQ_MANIFEST_DIR', '../data/raw/_manifest') }}/defects.parquet')"
+      - name: incidents
+        config:
+          meta:
+            external_location: "read_json('{{ env_var('HCQ_MANIFEST_DIR', '../data/raw/_manifest') }}/incidents.json')"

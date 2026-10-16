@@ -1,0 +1,64 @@
+name: hotel_dq
+version: "1.0.0"
+profile: hotel_dq
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Every model listed here is unioned into dq_issues. Keep it in sync with seeds/dq_checks.csv.
+  dq_checks:
+    - dq_missing_required
+    - dq_encoding_mojibake
+    - dq_star_invalid
+    - dq_phone_invalid
+    - dq_url_invalid
+    - dq_address_city_mismatch
+    - dq_star_conflict
+    - dq_geo_swapped
+    - dq_geo_offset
+    - dq_wrong_mapping
+    - dq_stale_listing
+    - dq_duplicate_listing
+    - dq_price_outlier
+
+models:
+  hotel_dq:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table
+    dq:
+      +schema: dq
+      +materialized: table
+      checks:
+        +tags: ["dq_check"]
+    eval:
+      +schema: eval
+      +materialized: table
+
+seeds:
+  hotel_dq:
+    +schema: ref
+    # Load through agate instead of DuckDB COPY: the COPY path is relative to the working
+    # directory, which differs between hcq, Dagster and a plain `dbt build` in this folder.
+    +fast: false
+    city_reference:
+      +column_types:
+        ags: varchar
+        dialing_code: varchar
+        postcode_min: integer
+        postcode_max: integer
+    dq_checks:
+      +column_types:
+        target_precision: double
+        target_recall: double

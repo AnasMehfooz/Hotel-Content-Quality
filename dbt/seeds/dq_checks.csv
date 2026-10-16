@@ -1,0 +1,14 @@
+check_code,dimension,severity,title,target_precision,target_recall
+MISSING_REQUIRED,completeness,high,Required field missing (name / coordinates / city),0.95,0.95
+ENCODING_MOJIBAKE,validity,medium,Text garbled by a wrong character encoding,0.95,0.95
+STAR_INVALID,validity,medium,Star rating outside the 1-5 scale or unparseable,0.95,0.95
+PHONE_INVALID,validity,low,Phone number malformed,0.95,0.95
+URL_INVALID,validity,low,Website URL malformed or placeholder,0.95,0.95
+ADDRESS_CITY_MISMATCH,consistency,medium,Postcode or phone area code belongs to the other city,0.95,0.95
+STAR_CONFLICT,consistency,medium,Star rating contradicts the master catalog,0.95,0.95
+GEO_SWAPPED,accuracy,high,Latitude and longitude swapped,0.95,0.95
+GEO_OFFSET,accuracy,high,Coordinates far from the mapped hotel,0.9,0.9
+WRONG_MAPPING,accuracy,high,Listing mapped to the wrong master hotel,0.9,0.9
+STALE_LISTING,timeliness,low,Listing not updated for too long,0.95,0.95
+DUPLICATE_LISTING,uniqueness,medium,Same hotel listed twice by one partner,0.9,0.9
+PRICE_OUTLIER,plausibility,high,Implausible nightly rate,0.95,0.95

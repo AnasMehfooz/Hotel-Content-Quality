@@ -1,0 +1,33 @@
+# docker compose up --build
+#   Dagster UI  -> http://localhost:3000   (materialize "daily_pipeline", or wait for the 06:30 schedule)
+#   Dashboard   -> http://localhost:8501
+# Ollama keeps running on the host (it needs your GPU); containers reach it via host.docker.internal.
+
+x-app: &app
+  build: .
+  image: hotel-content-quality:local
+  environment:
+    HCQ_OLLAMA_URL: http://host.docker.internal:11434
+    HCQ_REFERENCE: ${HCQ_REFERENCE:-synthetic}
+    HCQ_LLM_MODEL: ${HCQ_LLM_MODEL:-qwen3:14b}
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  volumes:
+    - ./data:/app/data
+    - ./reports:/app/reports
+    - ./src:/app/src
+    - ./dbt:/app/dbt
+
+services:
+  pipeline:
+    <<: *app
+    ports:
+      - "3000:3000"
+
+  dashboard:
+    <<: *app
+    command: ["streamlit", "run", "src/hcq/dashboard/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    ports:
+      - "8501:8501"
+    depends_on:
+      - pipeline

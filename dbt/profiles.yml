@@ -1,0 +1,8 @@
+hotel_dq:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # hcq sets HCQ_DUCKDB_PATH; the default works when you run dbt from this folder.
+      path: "{{ env_var('HCQ_DUCKDB_PATH', '../data/warehouse/hcq.duckdb') }}"
+      threads: 4

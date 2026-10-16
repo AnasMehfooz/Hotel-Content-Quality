@@ -1,0 +1,94 @@
+# Every SQL check honours the same contract, so dq_issues can union them blindly.
+# The column list is written once (YAML anchor &dq_columns) and reused.
+
+models:
+  - name: dq_missing_required
+    config:
+      contract:
+        enforced: true
+    columns: &dq_columns
+      - name: snapshot_date
+        data_type: date
+        description: Snapshot day the issue was observed.
+      - name: partner
+        data_type: varchar
+        description: Partner code.
+      - name: listing_id
+        data_type: varchar
+        description: Partner listing id.
+      - name: related_listing_id
+        data_type: varchar
+        description: Second listing of a pair (duplicates only).
+      - name: stay_date
+        data_type: date
+        description: Stay date (rate-level checks only).
+      - name: field
+        data_type: varchar
+        description: Field(s) the issue is about.
+      - name: observed_value
+        data_type: varchar
+        description: What the partner sent.
+      - name: expected_value
+        data_type: varchar
+        description: What it should probably be, if known.
+      - name: details
+        data_type: varchar
+        description: "JSON evidence such as thresholds, distances and scores."
+  - name: dq_encoding_mojibake
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_star_invalid
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_phone_invalid
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_url_invalid
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_address_city_mismatch
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_star_conflict
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_geo_swapped
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_geo_offset
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_wrong_mapping
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_stale_listing
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+  - name: dq_price_outlier
+    config:
+      contract:
+        enforced: true
+    columns: *dq_columns
+
+  - name: dq_duplicate_listing
+    description: Python model (no contract support). dq_issues casts its columns.

@@ -1,0 +1,8 @@
+[theme]
+primaryColor = "#3b82c4"
+
+[server]
+showEmailPrompt = false
+
+[browser]
+gatherUsageStats = false

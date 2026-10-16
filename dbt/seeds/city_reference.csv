@@ -1,0 +1,3 @@
+city,aliases,ags,postcode_min,postcode_max,dialing_code,centroid_lat,centroid_lon,min_lat,max_lat,min_lon,max_lon
+Köln,köln|koeln|koln|cologne,05315000,50667,51149,221,50.9375,6.9603,50.830,51.085,6.772,7.162
+Düsseldorf,düsseldorf|duesseldorf|dusseldorf,05111000,40210,40629,211,51.2277,6.7735,51.124,51.352,6.688,6.940

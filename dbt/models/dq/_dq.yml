@@ -1,0 +1,23 @@
+models:
+  - name: dq_issues
+    description: Every detected issue, one row per issue at its check's grain.
+    columns:
+      - name: issue_id
+        description: Hash of the issue key. Duplicate ids mean a check returns the same issue twice.
+        data_tests: [unique, not_null]
+      - name: check_code
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dq_checks')
+                field: check_code
+      - name: snapshot_date
+        data_tests: [not_null]
+      - name: partner
+        data_tests: [not_null]
+      - name: listing_id
+        data_tests: [not_null]
+
+  - name: dq_daily_summary
+    description: Issue counts per snapshot day, partner and check (zero-filled).

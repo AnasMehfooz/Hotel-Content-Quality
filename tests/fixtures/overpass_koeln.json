@@ -1,0 +1,17 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API (fixture, hand-written)",
+  "elements": [
+    {"type": "node", "id": 101, "lat": 50.9410, "lon": 6.9570,
+     "tags": {"tourism": "hotel", "name": "Testhotel Am Dom", "stars": "4S", "addr:street": "Domkloster",
+              "addr:housenumber": "2", "addr:postcode": "50667", "phone": "+49 (0)221 2701", "website": "testhotel.example.de"}},
+    {"type": "way", "id": 202, "center": {"lat": 50.9365, "lon": 6.9480},
+     "tags": {"tourism": "guest_house", "name": "Gästehaus Neumarkt", "contact:phone": "0221 / 123456;0221 / 999",
+              "addr:postcode": "40213"}},
+    {"type": "node", "id": 303, "lat": 50.9366, "lon": 6.9481,
+     "tags": {"tourism": "guest_house", "name": "Gästehaus  Neumarkt", "stars": "3"}},
+    {"type": "node", "id": 404, "lat": 50.9500, "lon": 6.9170, "tags": {"tourism": "hostel"}},
+    {"type": "node", "id": 505, "lat": 51.2260, "lon": 6.7740,
+     "tags": {"tourism": "hotel", "name": "Falsch verortet", "stars": "seven", "phone": "+49 211 555 0"}}
+  ]
+}

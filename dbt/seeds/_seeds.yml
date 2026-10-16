@@ -1,0 +1,11 @@
+seeds:
+  - name: city_reference
+    description: The two cities, their aliases, postcode ranges, dialling codes and bounding boxes.
+    columns:
+      - name: city
+        data_tests: [unique, not_null]
+  - name: dq_checks
+    description: Check registry with dimension, severity and precision/recall targets.
+    columns:
+      - name: check_code
+        data_tests: [unique, not_null]

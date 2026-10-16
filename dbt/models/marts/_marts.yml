@@ -1,0 +1,41 @@
+models:
+  - name: fct_listings
+    description: One row per partner listing per snapshot day, joined to mapping and master data.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [snapshot_date, partner, listing_id]
+    columns:
+      - name: snapshot_date
+        data_tests: [not_null]
+      - name: partner
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [northwind, rheinland, citybeds]
+      - name: listing_id
+        data_tests: [not_null]
+      - name: hotel_id
+        description: Mapped master hotel; null when the listing is not mapped yet.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_hotel')
+                field: hotel_id
+
+  - name: fct_rates
+    description: Nightly rates per listing, snapshot day and stay date.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [snapshot_date, partner, listing_id, stay_date]
+    columns:
+      - name: stay_date
+        data_tests: [not_null]
+
+  - name: dim_hotel
+    description: Master hotel catalog with partner coverage.
+    columns:
+      - name: hotel_id
+        data_tests: [unique, not_null]

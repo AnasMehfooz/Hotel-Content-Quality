@@ -1,0 +1,19 @@
+models:
+  - name: eval_labels
+    description: Injected defects (ground truth). Simulation only.
+  - name: eval_incidents
+    description: The systemic incidents injected into the simulated window.
+  - name: eval_matches
+    description: Detected issues outer-joined to labels at each check's grain.
+  - name: eval_check_scores
+    description: Precision, recall and F1 per check, with the targets from the registry.
+    columns:
+      - name: check_code
+        data_tests: [unique, not_null]
+  - name: eval_check_scores_daily
+    description: Predicted vs labelled issue counts per check and snapshot day.
+  - name: eval_issue_truth
+    description: Each detected issue classified as systemic, record_level or false_positive.
+    columns:
+      - name: issue_id
+        data_tests: [unique, not_null]

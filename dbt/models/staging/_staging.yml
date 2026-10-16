@@ -1,0 +1,20 @@
+models:
+  - name: stg_master__hotels
+    description: Master hotel catalog, one row per hotel.
+    columns:
+      - name: hotel_id
+        data_tests: [unique, not_null]
+
+  - name: stg_northwind__listings
+    description: Northwind listings in the common listing shape.
+  - name: stg_rheinland__listings
+    description: Rheinland listings in the common listing shape.
+  - name: stg_citybeds__listings
+    description: CityBeds listings in the common listing shape.
+
+  - name: stg_mapping__listings
+    description: Mapping table per snapshot. A listing missing here is unmapped.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [snapshot_date, partner, listing_id]
